@@ -1,5 +1,3 @@
-
-import axios from "axios";
 import { Link, useOutletContext } from "react-router";
 import ReactDatePicker from "react-datepicker";
 import { useEffect, useMemo, useState } from "react";
@@ -21,18 +19,34 @@ const Allproduct = () => {
   const [rowsPerPage] = useState(6);
   const [currentItems, setCurrentItems] = useState([]);
 
-  useEffect(() => fetchProducts(), []);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
+  // ✅ Fetch with fetch API
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(
-        "https://price-tracker-of-market-server.onrender.com/productsAll"
+      const res = await fetch(
+        "https://price-tracker-for-local-markets-ser.vercel.app/productsAll",
+        {
+          method: "GET",
+          headers: {
+            "Cache-Control": "no-cache", // prevent cached 304
+            "Pragma": "no-cache",
+          },
+        }
       );
-      setProducts(res.data);
-      setFilteredProducts(res.data);
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch products");
+      }
+
+      const data = await res.json();
+      setProducts(data);
+      setFilteredProducts(data);
       setLoading(false);
     } catch (err) {
-      setError("Failed to fetch products");
+      setError("Failed to fetch products: " + err.message);
       setLoading(false);
     }
   };
@@ -91,8 +105,9 @@ const Allproduct = () => {
 
         {/* Filters (Sticky Top) */}
         <div
-          className={`sticky top-4 z-50 flex flex-wrap justify-center gap-6 p-6 rounded-xl shadow-lg mb-12 transition-colors duration-500 ${theme === "dark" ? "bg-gray-800" : "bg-white"
-            }`}
+          className={`sticky top-4 z-50 flex flex-wrap justify-center gap-6 p-6 rounded-xl shadow-lg mb-12 transition-colors duration-500 ${
+            theme === "dark" ? "bg-gray-800" : "bg-white"
+          }`}
         >
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-400">📅 Start</label>
@@ -190,49 +205,48 @@ const Allproduct = () => {
             </div>
 
             {/* Pagination */}
-         
-{/* Pagination */}
-<div className="mt-12 flex justify-center gap-2 flex-wrap">
-  <button
-    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-    disabled={currentPage === 1}
-    className={`px-4 py-2 rounded-lg font-medium transition
-      ${currentPage === 1
-        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-        : "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:from-green-600 hover:to-green-700"
-      }`}
-  >
-    Prev
-  </button>
+            <div className="mt-12 flex justify-center gap-2 flex-wrap">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg font-medium transition
+                  ${
+                    currentPage === 1
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:from-green-600 hover:to-green-700"
+                  }`}
+              >
+                Prev
+              </button>
 
-  {[...Array(totalPages)].map((_, i) => (
-    <button
-      key={i}
-      onClick={() => setCurrentPage(i + 1)}
-      className={`px-4 py-2 rounded-lg font-medium transition
-        ${currentPage === i + 1
-          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
-          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
-        }`}
-    >
-      {i + 1}
-    </button>
-  ))}
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-4 py-2 rounded-lg font-medium transition
+                    ${
+                      currentPage === i + 1
+                        ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+                    }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
 
-  <button
-    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-    disabled={currentPage === totalPages}
-    className={`px-4 py-2 rounded-lg font-medium transition
-      ${currentPage === totalPages
-        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-        : "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:from-green-600 hover:to-green-700"
-      }`}
-  >
-    Next
-  </button>
-</div>
-
-
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg font-medium transition
+                  ${
+                    currentPage === totalPages
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:from-green-600 hover:to-green-700"
+                  }`}
+              >
+                Next
+              </button>
+            </div>
           </>
         )}
       </div>
