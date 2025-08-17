@@ -33,7 +33,7 @@ const Login = () => {
       if (user) {
         toast.success("User Login Successfully");
         axios.post(
-          "https://price-tracker-of-market-server.onrender.com/users",
+          "https://price-tracker-for-local-markets-ser.vercel.app/users",
           {
             name: user.displayName,
             email: user.email,
