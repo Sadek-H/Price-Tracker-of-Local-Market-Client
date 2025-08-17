@@ -195,7 +195,7 @@ const Navbar = ({ theme, setTheme }) => {
 
         {/* Mobile Drawer */}
         {isOpen && (
-          <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div className="fixed inset-0 z-10 flex lg:hidden">
             <div
               className={`w-72 shadow-xl h-full p-5 relative ${
                 theme === "dark" ? "bg-gray-900 text-white" : "bg-[#F6F6F6] text-green-600"
@@ -306,7 +306,7 @@ const Navbar = ({ theme, setTheme }) => {
 
             {/* Backdrop */}
             <div
-              className="flex-1 bg-black bg-opacity-30"
+              className="flex-1 bg-opacity-30"
               onClick={() => setIsOpen(false)}
             ></div>
           </div>
