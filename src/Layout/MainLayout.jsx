@@ -1,11 +1,17 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import { Outlet } from "react-router";
 import { ToastContainer } from "react-toastify";
 import Footer from "../Pages/Home/Footer";
+import { useState } from "react";
 
 
 const MainLayout = () => {
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  useEffect(() => {
+    document.body.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
   return (
     <div>
       <ToastContainer
@@ -18,11 +24,11 @@ const MainLayout = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme={theme}
       />
-      <Navbar></Navbar>
-      <Outlet></Outlet>
-      <Footer></Footer>
+      <Navbar theme={theme} setTheme={setTheme} />
+      <Outlet context={{ theme }} />
+      <Footer theme={theme} />
     </div>
   );
 };

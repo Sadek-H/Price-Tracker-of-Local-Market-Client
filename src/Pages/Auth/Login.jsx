@@ -29,10 +29,7 @@ const Login = () => {
   const handleSignInGoogle = () => {
     signInWithGoogle().then((res) => {
       const user = res.user;
-<<<<<<< HEAD
-      console.log(user);
-=======
->>>>>>> c1114fc (add theme)
+
       if (user) {
         toast.success("User Login Successfully");
         axios.post(

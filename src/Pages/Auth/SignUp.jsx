@@ -1,20 +1,22 @@
 import React, { useState, useContext } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router";
 import { motion } from "framer-motion";
-import registerlottie from "../../assets/looties/register.json";
 import Lottie from "lottie-react";
-import { AuthContext } from "../../context/AuthContext";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+import { AuthContext } from "../../context/AuthContext";
+import registerlottie from "../../assets/looties/register.json";
+
 const SignUp = () => {
-  const [error, setError] = useState("");
   const { createUser, profile, setUser, user, signInWithGoogle, token } =
     useContext(AuthContext);
   const { theme } = useOutletContext();
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
+  // Handle regular sign-up
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -28,60 +30,36 @@ const SignUp = () => {
       return;
     }
 
-<<<<<<< HEAD
-      //  console.log(user);
-      // Update user profile with name and photo
-      profile({
-        displayName: name,
-        photoURL: photo,
-      });
-      setUser({ ...user, displayName: name, photoURL: photo });
-      setError("");
-      // Optionally redirect or show success message here
-    });
-    //send user data to server
-    axios
-      .post(
-        "https://price-tracker-of-market-server.onrender.com/users",
-        {
-          name,
-          email,
-          photo,
-          role: "user",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-=======
     createUser(email, password)
       .then((res) => {
         if (res.user) {
-          toast.success("User Registered Successfully");
-          navigate("/");
+          // Update Firebase profile
           profile({ displayName: name, photoURL: photo });
           setUser({ ...user, displayName: name, photoURL: photo });
           setError("");
+          toast.success("User Registered Successfully");
+
+          // Save user to server
+          axios
+            .post(
+              "https://price-tracker-for-local-markets-ser.vercel.app/users",
+              { name, email, photo, role: "user" },
+              { headers: { Authorization: `Bearer ${token}` } }
+            )
+            .catch((err) => console.error("Server Error:", err));
+
+          navigate("/");
         }
       })
       .catch((err) => setError(err.message));
-
-    axios
-      .post(
-        "https://price-tracker-for-local-markets-ser.vercel.app/users",
-        { name, email, photo, role: "user" },
-        { headers: { Authorization: `Bearer ${token}` } }
->>>>>>> c1114fc (add theme)
-      )
-      .catch((err) => setError(err.message));
   };
 
+  // Handle Google sign-in
   const handleSignInGoogle = () => {
     signInWithGoogle()
       .then((res) => {
-        const user = res.user;
-        if (user) {
+        const gUser = res.user;
+        if (gUser) {
           Swal.fire({
             title: "Google Sign In Successful",
             icon: "success",
@@ -90,43 +68,37 @@ const SignUp = () => {
             background: theme === "dark" ? "#1f2937" : "#e6f9ed",
             color: theme === "dark" ? "#f3f4f6" : "#166534",
             iconColor: theme === "dark" ? "#22c55e" : "#22c55e",
-            customClass: { popup: "rounded-xl shadow-lg", title: "font-bold text-lg", content: "text-base" },
+            customClass: { popup: "rounded-xl shadow-lg", title: "font-bold text-lg" },
           });
 
-          axios.post(
-<<<<<<< HEAD
-            "https://price-tracker-of-market-server.onrender.com/users",
-            {
-              name: user.displayName,
-              email: user.email,
-              photo: user.photoURL,
-              role: "user",
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-=======
-            "https://price-tracker-for-local-markets-ser.vercel.app/users",
-            { name: user.displayName, email: user.email, photo: user.photoURL, role: "user" },
-            { headers: { Authorization: `Bearer ${token}` } }
->>>>>>> c1114fc (add theme)
-          );
+          axios
+            .post(
+              "https://price-tracker-for-local-markets-ser.vercel.app/users",
+              { name: gUser.displayName, email: gUser.email, photo: gUser.photoURL, role: "user" },
+              { headers: { Authorization: `Bearer ${token}` } }
+            )
+            .catch((err) => console.error("Server Error:", err));
+
           navigate("/");
         }
       })
       .catch((err) => setError(err.message));
   };
 
-  const bgClass = theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gradient-to-tr from-green-100 via-white to-green-50";
+  // Theme-based styling
+  const bgClass = theme === "dark"
+    ? "bg-gray-900 text-gray-100"
+    : "bg-gradient-to-tr from-green-100 via-white to-green-50";
+
   const cardBg = theme === "dark" ? "bg-gray-800 bg-opacity-90" : "bg-white bg-opacity-90";
+
   const inputClass = theme === "dark"
     ? "input input-bordered w-full border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-300 focus:ring-green-500 rounded-xl"
     : "input input-bordered w-full border-green-400 bg-white text-gray-900 placeholder-gray-500 focus:ring-green-400 rounded-xl";
 
   return (
     <div className={`min-h-screen flex flex-col-reverse md:flex-row items-center justify-around p-4 md:p-8 ${bgClass}`}>
+      
       {/* Form Section */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -193,11 +165,11 @@ const SignUp = () => {
         >
           <svg aria-label="Google logo" width="16" height="16" viewBox="0 0 512 512">
             <g>
-              <path d="m0 0H512V512H0" fill="#fff"></path>
-              <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path>
-              <path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path>
-              <path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path>
-              <path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path>
+              <path d="m0 0H512V512H0" fill="#fff" />
+              <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341" />
+              <path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57" />
+              <path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73" />
+              <path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55" />
             </g>
           </svg>{" "}
           Sign up with Google
@@ -206,7 +178,7 @@ const SignUp = () => {
 
       {/* Lottie Animation */}
       <div className="w-40 md:w-1/2 mt-8 md:mt-0 md:mb-14 flex items-center justify-center">
-        <Lottie animationData={registerlottie} loop={true} className="max-w-[550px] w-full" />
+        <Lottie animationData={registerlottie} loop className="max-w-[550px] w-full" />
       </div>
     </div>
   );

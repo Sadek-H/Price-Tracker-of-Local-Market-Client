@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
-import Navbar from "../Components/Navbar";
 import { NavLink, Outlet } from "react-router";
 import axios from "axios";
-import loaderlottie from "../assets/looties/Loading.json";
-import { AuthContext } from "../context/AuthContext";
 import Lottie from "lottie-react";
 import { ToastContainer } from "react-toastify";
 import { FaTimes } from "react-icons/fa";
+
+import Navbar from "../Components/Navbar";
 import Footer from "../Pages/Home/Footer";
+import loaderlottie from "../assets/looties/Loading.json";
+import { AuthContext } from "../context/AuthContext";
 
 const DashboardLayout = () => {
   const { user, token } = useContext(AuthContext);
@@ -16,191 +17,71 @@ const DashboardLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   // ✅ Theme persistence
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
-  });
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  useEffect(() => localStorage.setItem("theme", theme), [theme]);
 
+  // Fetch user role
   useEffect(() => {
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    if (!user?.email) return;
 
-  useEffect(() => {
-    if (user?.email) {
-      axios
-<<<<<<< HEAD
-        .get(`https://price-tracker-of-market-server.onrender.com/users/role/${user.email}`)
-=======
-        .get(
-          `https://price-tracker-for-local-markets-ser.vercel.app/users/role/${user.email}`
-        )
->>>>>>> c1114fc (add theme)
-        .then((res) => {
-          setRole(res.data.role);
-          setLoading(false);
-        })
-<<<<<<< HEAD
-        .catch((err) => console.log(err));
-=======
-        .catch((err) => err);
->>>>>>> c1114fc (add theme)
-    }
+    axios
+      .get(`https://price-tracker-for-local-markets-ser.vercel.app/users/role/${user.email}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setRole(res.data.role))
+      .catch((err) => console.error("❌ Role fetch error:", err))
+      .finally(() => setLoading(false));
   }, [user, token]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Lottie
-          animationData={loaderlottie}
-          loop
-          className="max-w-[450px] w-full"
-        />
+        <Lottie animationData={loaderlottie} loop className="max-w-[450px] w-full" />
       </div>
     );
   }
 
-  // Sidebar Links
-  const renderLinks = () => {
-    const baseClass =
-      "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-300";
-    const activeClass =
-      theme === "dark"
-        ? "bg-green-700 text-white"
-        : "bg-green-200 text-green-900";
-
-    if (role === "user") {
-      return (
-        <>
-          <NavLink
-            to="/dashboard/watchlist"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            📌 Manage Watchlist
-          </NavLink>
-          <NavLink
-            to="/dashboard/my-orders"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            🛒 My Order List
-          </NavLink>
-          <NavLink
-            to="/dashboard/pricetrends"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            📈 View Price Trends
-          </NavLink>
-          <NavLink
-            to="/dashboard/become-vendor"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            ⚙️ Become a Vendor
-          </NavLink>
-        </>
-      );
-    }
-
-    if (role === "vendor") {
-      return (
-        <>
-          <NavLink
-            to="/dashboard/add-product"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            ➕ Add Product
-          </NavLink>
-          <NavLink
-            to="/dashboard/my-products"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            📦 My Products
-          </NavLink>
-          <NavLink
-            to="/dashboard/add-advertisement"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            📢 Add Advertisement
-          </NavLink>
-          <NavLink
-            to="/dashboard/my-ads"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            🧾 My Advertisements
-          </NavLink>
-        </>
-      );
-    }
-
-    if (role === "admin") {
-      return (
-        <>
-          <NavLink
-            to="/dashboard/users"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            👥 All Users
-          </NavLink>
-          <NavLink
-            to="/dashboard/all-products"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            📋 All Products
-          </NavLink>
-          <NavLink
-            to="/dashboard/all-ads"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            📢 All Advertisements
-          </NavLink>
-          <NavLink
-            to="/dashboard/all-orders"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            🛍 All Orders
-          </NavLink>
-          <NavLink
-            to="/dashboard/all-vendors"
-            className={({ isActive }) =>
-              `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`
-            }
-          >
-            🧾 Vendor Requests
-          </NavLink>
-        </>
-      );
-    }
+  // Sidebar links configuration
+  const linksConfig = {
+    user: [
+      { to: "/dashboard/watchlist", label: "📌 Manage Watchlist" },
+      { to: "/dashboard/my-orders", label: "🛒 My Order List" },
+      { to: "/dashboard/pricetrends", label: "📈 View Price Trends" },
+      { to: "/dashboard/become-vendor", label: "⚙️ Become a Vendor" },
+    ],
+    vendor: [
+      { to: "/dashboard/add-product", label: "➕ Add Product" },
+      { to: "/dashboard/my-products", label: "📦 My Products" },
+      { to: "/dashboard/add-advertisement", label: "📢 Add Advertisement" },
+      { to: "/dashboard/my-ads", label: "🧾 My Advertisements" },
+    ],
+    admin: [
+      { to: "/dashboard/users", label: "👥 All Users" },
+      { to: "/dashboard/all-products", label: "📋 All Products" },
+      { to: "/dashboard/all-ads", label: "📢 All Advertisements" },
+      { to: "/dashboard/all-orders", label: "🛍 All Orders" },
+      { to: "/dashboard/all-vendors", label: "🧾 Vendor Requests" },
+    ],
   };
 
+  const baseClass =
+    "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-300";
+  const activeClass = theme === "dark" ? "bg-green-700 text-white" : "bg-green-200 text-green-900";
+
+  const renderLinks = () =>
+    linksConfig[role]?.map((link) => (
+      <NavLink
+        key={link.to}
+        to={link.to}
+        className={({ isActive }) => `${baseClass} ${isActive ? activeClass : "hover:bg-green-100"}`}
+        aria-label={link.label}
+      >
+        {link.label}
+      </NavLink>
+    ));
+
   return (
-    <div
-      className={
-        theme === "dark"
-          ? "bg-gray-950 text-white"
-          : "bg-gray-50 text-gray-900"
-      }
-    >
+    <div className={theme === "dark" ? "bg-gray-950 text-white" : "bg-gray-50 text-gray-900"}>
       <ToastContainer autoClose={900} position="top-right" theme={theme} />
 
       {/* Navbar */}
@@ -217,20 +98,30 @@ const DashboardLayout = () => {
       </div>
 
       <div className="flex min-h-screen relative">
+        {/* Mobile Backdrop */}
+        {menuOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            onClick={() => setMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Sidebar */}
         <aside
           className={`fixed md:static top-0 z-50 md:z-auto 
-          ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-900"} 
-          shadow-lg md:rounded-r-2xl p-6 transition-all duration-300 ease-in-out
-          ${menuOpen ? "left-0 w-72 min-h-screen" : "-left-full"}
-          md:w-72 md:min-h-screen`}
+            ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-900"} 
+            shadow-lg md:rounded-r-2xl p-6 transition-all duration-300 ease-in-out
+            ${menuOpen ? "left-0 w-72 min-h-screen" : "-left-full"}
+            md:w-72 md:min-h-screen`}
         >
-          {/* Close for mobile */}
+          {/* Close button for mobile */}
           <div className="flex justify-between items-center mb-6 md:hidden">
             <h2 className="text-xl font-bold">📊 Dashboard</h2>
             <button
               onClick={() => setMenuOpen(false)}
               className="text-2xl text-red-500"
+              aria-label="Close Dashboard Menu"
             >
               <FaTimes />
             </button>
@@ -251,9 +142,7 @@ const DashboardLayout = () => {
           </NavLink>
 
           {/* Footer info */}
-          <span className="text-xs text-gray-400 block mt-6">
-            Logged in as: {user?.email}
-          </span>
+          <span className="text-xs text-gray-400 block mt-6">Logged in as: {user?.email}</span>
         </aside>
 
         {/* Main Content */}
