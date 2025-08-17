@@ -1,25 +1,28 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../../context/AuthContext';
+import { useOutletContext } from 'react-router';
 
-const CheckoutForm = ({selectedProduct}) => {
+const CheckoutForm = ({ selectedProduct }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const {user,token} = use(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [clientSecret, setClientSecret] = useState('');
   const [processing, setProcessing] = useState(false);
   const [paymentSucceeded, setPaymentSucceeded] = useState(false);
-  
- 
-   const amount = parseInt(selectedProduct?.prices?.[0]?.price || "0") * 100;
+  const { theme } = useOutletContext();
+
+  const amount = parseInt(selectedProduct?.prices?.[0]?.price || '0') * 100;
 
   useEffect(() => {
-    // Call your backend to create payment intent and get clientSecret
+    if (!amount) return;
     axios
-      .post('https://price-tracker-of-market-server.onrender.com/create-payment-intent', { amount },
-         {
+      .post(
+        'https://price-tracker-of-market-server.onrender.com/create-payment-intent',
+        { amount },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -27,7 +30,7 @@ const CheckoutForm = ({selectedProduct}) => {
       )
       .then((res) => setClientSecret(res.data.clientSecret))
       .catch(() => toast.error('Unable to start payment process.'));
-  }, []);
+  }, [amount, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,9 +50,10 @@ const CheckoutForm = ({selectedProduct}) => {
       return;
     }
 
-    const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: paymentMethod.id,
-    });
+    const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+      clientSecret,
+      { payment_method: paymentMethod.id }
+    );
 
     if (confirmError) {
       toast.error(confirmError.message);
@@ -58,29 +62,39 @@ const CheckoutForm = ({selectedProduct}) => {
     }
 
     if (paymentIntent.status === 'succeeded') {
-        const paymentData ={
-            userEmail:user?.email,
-            userName : user?.displayName,
-            amount : amount,
-            paymentIntentId : paymentIntent.id,
-            status: paymentIntent.status,
-            productId: selectedProduct._id,
-            productName : selectedProduct.itemName,
-            marketName : selectedProduct.marketName,
-            date: new Date().toISOString().split("T")[0],
-        }
-        axios.post("https://price-tracker-of-market-server.onrender.com/payments",paymentData)
-        .then(()=>  toast.success('Payment successful! Thank you.'));
-    
+      const paymentData = {
+        userEmail: user?.email,
+        userName: user?.displayName,
+        amount,
+        paymentIntentId: paymentIntent.id,
+        status: paymentIntent.status,
+        productId: selectedProduct._id,
+        productName: selectedProduct.itemName,
+        marketName: selectedProduct.marketName,
+        date: new Date().toISOString().split('T')[0],
+      };
+
+      axios
+        .post('https://price-tracker-of-market-server.onrender.com/payments', paymentData)
+        .then(() => toast.success('Payment successful! Thank you.'));
+
       setPaymentSucceeded(true);
     }
     setProcessing(false);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-      <div className="bg-white shadow-lg rounded-lg max-w-md w-full p-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+    <div
+      className={`flex items-center justify-center min-h-screen p-4 ${
+        theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
+      }`}
+    >
+      <div
+        className={`shadow-lg rounded-xl max-w-md w-full p-8 transition ${
+          theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'
+        }`}
+      >
+        <h2 className="text-2xl font-semibold mb-6 text-center">
           Pay for Parcel Pickup
         </h2>
 
@@ -90,18 +104,22 @@ const CheckoutForm = ({selectedProduct}) => {
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <label className="block mb-2 text-gray-700 font-medium">
-              Card details
-            </label>
-            <div className="border border-gray-300 rounded-md p-3 mb-6 focus-within:ring-2 focus-within:ring-indigo-400">
+            <label className="block mb-2 font-medium">Card details</label>
+            <div
+              className={`border rounded-md p-3 mb-6 focus-within:ring-2 ${
+                theme === 'dark'
+                  ? 'border-gray-600 focus-within:ring-orange-400'
+                  : 'border-gray-300 focus-within:ring-orange-500'
+              }`}
+            >
               <CardElement
                 options={{
                   style: {
                     base: {
                       fontSize: '16px',
-                      color: '#1a202c',
+                      color: theme === 'dark' ? '#F9FAFB' : '#1a202c',
                       '::placeholder': {
-                        color: '#a0aec0',
+                        color: theme === 'dark' ? '#9CA3AF' : '#a0aec0',
                       },
                     },
                     invalid: {
@@ -115,13 +133,13 @@ const CheckoutForm = ({selectedProduct}) => {
             <button
               type="submit"
               disabled={!stripe || !clientSecret || processing}
-              className={`w-full py-3 rounded-md text-white font-semibold transition ${
+              className={`w-full py-3 rounded-md font-semibold transition ${
                 processing
-                  ? 'bg-indigo-300 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700'
+                  ? 'bg-orange-300 cursor-not-allowed'
+                  : 'bg-orange-500 hover:bg-orange-600 text-white'
               }`}
             >
-              {processing ? 'Processing...' : 'Pay Now'}
+              {processing ? 'Processing...' : `Pay ৳${amount / 100}`}
             </button>
           </form>
         )}

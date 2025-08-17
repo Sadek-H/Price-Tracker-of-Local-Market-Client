@@ -3,18 +3,18 @@ import { motion } from "framer-motion";
 const Footer = () => {
   return (
     <motion.footer
-      className="bg-gray-900 text-gray-300 py-10"
+      className="bg-gray-900 text-gray-300 py-10 border-t border-gray-800"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
     >
-      <div className="max-w-screen mx-auto px-6 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+      <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
         
         {/* Logo & Name */}
         <div className="flex items-center space-x-3">
           {/* Replace with your own logo img or SVG */}
        <img className="w-10 h-10 border-1  rounded-b-full" src="  https://i.ibb.co/7LM7D10/vegetable.png" alt="" />
-          <span className="text-xl font-semibold">কাঁচাবাজার</span>
+          <span className="text-xl text-[#FFD500] font-semibold">কাঁচাবাজার</span>
         </div>
 
         {/* Contact Details */}

@@ -18,7 +18,7 @@ const ProductPreview = () => {
   }, []);
 
   // Theme-based classes
-  const pageBg = theme === 'dark' ? 'bg-gray-900' : 'bg-white';
+  const pageBg = theme === 'dark' ? 'bg-gray-800' : 'bg-white';
   const headingColor = theme === 'dark' ? 'text-white' : 'text-[#0B4F2E]';
   const cardBg = theme === 'dark' ? 'bg-gray-800' : 'bg-green-50';
   const cardShadow = theme === 'dark' ? 'shadow-gray-700' : 'shadow-md';
@@ -65,7 +65,7 @@ const ProductPreview = () => {
             return (
               <motion.div
                 key={product._id}
-                className={`rounded-xl ${cardBg} ${cardShadow} hover:shadow-lg transition-shadow cursor-pointer flex flex-col max-w-sm`}
+                className={`rounded-xl border-1 border-gray-100 ${cardBg} ${cardShadow} hover:shadow-lg transition-shadow cursor-pointer flex flex-col max-w-sm`}
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 },

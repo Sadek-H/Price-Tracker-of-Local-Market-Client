@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useParams, useNavigate, Link } from "react-router";
+import { useParams, useNavigate, Link, useOutletContext } from "react-router";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaTrash } from "react-icons/fa";
@@ -29,7 +29,7 @@ const ProductDetails = () => {
   const [comparisonData, setComparisonData] = useState([]);
   const [role, setRole] = useState("user");
   const { user,token } = useContext(AuthContext) || { user: { role: "user" } };
-
+  const {theme} = useOutletContext();
   console.log(role);
   useEffect(() => {
     if (user?.email) {
@@ -218,229 +218,194 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="min-h-screen px-6 py-10 bg-green-50">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center text-green-700 hover:underline mb-6"
-      >
-        <FaArrowLeft className="mr-2" /> Back to Products
-      </button>
+   <div className={`min-h-screen px-6 py-10 transition-colors duration-500 ${theme === 'dark' ? 'bg-gray-900' : 'bg-green-50'}`}>
+  <div className="container mx-auto">
+  {/* Back Button */}
+  <button
+    onClick={() => navigate(-1)}
+    className={`flex items-center mb-6 font-medium ${theme === 'dark' ? 'text-white hover:text-gray-300' : 'text-green-700 hover:underline'}`}
+  >
+    <FaArrowLeft className="mr-2" /> Back to Products
+  </button>
 
-      {/* Main Card */}
-      <motion.div
-        className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="bg-green-100 flex justify-center items-center p-6">
-          <img
-            src={product.imageUrl}
-            alt={product.itemName}
-            className="rounded-xl w-full h-auto max-h-[400px] object-contain"
-          />
+  {/* Main Card */}
+  <motion.div
+    className={`max-w-5xl mx-auto grid md:grid-cols-2 overflow-hidden rounded-2xl shadow-xl transition-colors duration-500 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6 }}
+  >
+    <div className="flex justify-center items-center p-6 bg-green-100">
+      <img
+        src={product.imageUrl}
+        alt={product.itemName}
+        className="w-full max-h-96 object-contain rounded-xl"
+      />
+    </div>
+
+    <div className="p-6 flex flex-col justify-between space-y-4">
+      <div>
+        <h2 className={`${theme === 'dark' ? 'text-white' : 'text-green-800'} text-3xl font-bold mb-2`}>
+          {product.itemName}
+        </h2>
+        <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-green-600'} text-sm`}>
+          🏪 Market: {product.marketName} | 👤 Vendor: {product.vendorName} | 📆 {new Date(latestDate).toLocaleDateString()}
+        </p>
+
+        <span className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${
+          product.status === 'approved' ? 'bg-green-200 text-green-900' :
+          product.status === 'pending' ? 'bg-yellow-200 text-yellow-900' :
+          'bg-red-200 text-red-900'
+        }`}>
+          {product.status || 'unknown'}
+        </span>
+
+        <p className={`${theme === 'dark' ? 'text-white' : 'text-green-900'} font-semibold text-lg mt-2`}>
+          💵 Price: ৳{latestPrice}/kg
+        </p>
+
+        <div className="mt-4">
+          <h3 className={`${theme === 'dark' ? 'text-white' : 'text-green-800'} font-semibold`}>📝 Description</h3>
+          <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-green-700'} text-sm whitespace-pre-line`}>
+            {product.itemDescription || product.description || 'No description provided.'}
+          </p>
         </div>
 
-        <div className="p-6 flex flex-col justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-green-800 mb-2">
-              {product.itemName}
-            </h2>
-            <p className="text-green-600 text-sm mb-1">
-              🏪 Market: {product.marketName}
-            </p>
-            <p className="text-green-600 text-sm mb-1">
-              👤 Vendor: {product.vendorName}
-            </p>
-            <p className="text-green-600 text-sm mb-4">
-              📆 Date: {new Date(latestDate).toLocaleDateString()}
-            </p>
-
-            <span
-              className={`w-max px-3 py-1 text-xs font-semibold rounded-full mb-4 ${
-                product.status === "approved"
-                  ? "bg-green-200 text-green-900"
-                  : product.status === "pending"
-                  ? "bg-yellow-200 text-yellow-900"
-                  : "bg-red-200 text-red-900"
-              }`}
-            >
-              {product.status || "unknown"}
-            </span>
-
-            <p className="font-semibold text-green-900 mb-4 mt-2">
-              Price: ৳{latestPrice} /kg
-            </p>
-
-            <div>
-              <h3 className="text-lg font-semibold text-green-800 mb-1">
-                📝 Description
-              </h3>
-              <p className="text-green-700 text-sm whitespace-pre-line">
-                {product.itemDescription ||
-                  product.description ||
-                  "No description provided."}
-              </p>
-            </div>
-
-            {sortedPrices.length > 1 && (
-              <div className="mt-4">
-                <h3 className="text-green-800 font-semibold">
-                  📋 Price History
-                </h3>
-                <ul className="text-green-700 text-sm list-disc ml-5 max-h-40 overflow-y-auto">
-                  {sortedPrices.map((entry, index) => (
-                    <li key={index}>
-                      {new Date(entry.date).toLocaleDateString()} — ৳
-                      {entry.price}/kg
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 flex gap-4">
-            <button
-              onClick={handleAddToWatchlist}
-              disabled={role === "admin" || role === "vendor"}
-              className={`px-4 py-2 text-white rounded-xl shadow 
-    ${
-      role === "admin" || role === "vendor"
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-yellow-400 hover:bg-yellow-500"
-    }`}
-            >
-              ⭐ Add to Watchlist
-            </button>
-
-            <Link
-              to={`/payment/${product._id}`}
-              className="px-4 py-2 bg-green-600 text-white rounded-xl shadow hover:bg-green-700"
-            >
-              🛒 Buy Product
-            </Link>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* 📊 Comparison Section */}
-      <div className="max-w-5xl mx-auto mt-10 bg-white p-6 rounded-xl shadow">
-        <label className="text-green-800 font-semibold block mb-2">
-          📊 Compare with previous date:
-        </label>
-
-        <ReactDatePicker
-          selected={selectedDate}
-          onChange={handleCompareDate}
-          dateFormat="yyyy-MM-dd"
-          maxDate={yesterday}
-          className="border p-2 rounded-md border-green-300 w-full max-w-xs mb-4"
-          placeholderText="Select a past date"
-        />
-
-        {comparisonData.length === 2 && (
-          <div className="my-4">
-            <p className="text-lg font-semibold text-green-800">
-              🧾 Price Difference:{" "}
-              <span className="text-black">
-                {comparisonData[1].price - comparisonData[0].price}৳
-              </span>
-            </p>
-
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={comparisonData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis unit="৳" />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="price"
-                  stroke="#00B894"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+        {sortedPrices.length > 1 && (
+          <div className="mt-4 max-h-40 overflow-y-auto">
+            <h3 className={`${theme === 'dark' ? 'text-white' : 'text-green-800'} font-semibold`}>📋 Price History</h3>
+            <ul className={`${theme === 'dark' ? 'text-gray-300' : 'text-green-700'} list-disc ml-5 text-sm`}>
+              {sortedPrices.map((entry, idx) => (
+                <li key={idx}>
+                  {new Date(entry.date).toLocaleDateString()} — ৳{entry.price}/kg
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>
 
-      {/* 💬 Reviews Section */}
-      <div className="max-w-5xl mx-auto mt-10 bg-white rounded-xl p-6 shadow">
-        <h3 className="text-xl font-semibold text-green-800 mb-4">
-          💬 User Reviews
-        </h3>
+      <div className="flex flex-wrap gap-4 mt-4">
+        <button
+          onClick={handleAddToWatchlist}
+          disabled={role === 'admin' || role === 'vendor'}
+          className={`px-4 py-2 rounded-xl font-semibold shadow transition transform hover:scale-105 ${
+            role === 'admin' || role === 'vendor'
+              ? 'bg-gray-500 cursor-not-allowed text-gray-200'
+              : 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white hover:from-yellow-500 hover:to-yellow-600'
+          }`}
+        >
+          ⭐ Add to Watchlist
+        </button>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <Rating
-            initialRating={rating}
-            emptySymbol={<span className="text-gray-300 text-3xl">★</span>}
-            fullSymbol={<span className="text-yellow-400 text-3xl">★</span>}
-            fractions={2}
-            onChange={(rate) => setRating(rate)}
-          />
-          <textarea
-            name="review"
-            rows="3"
-            placeholder="Write your honest review here..."
-            className="w-full border border-green-300 rounded-lg p-3 text-sm"
-            required
-          ></textarea>
-          <button
-            type="submit"
-            className="self-end bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl shadow"
-          >
-            Submit Review
-          </button>
-        </form>
-
-        <div className="mt-6">
-          {reviews.length === 0 && (
-            <p className="text-orange-600 font-semibold bg-amber-50 p-3">
-              No reviews yet.
-            </p>
-          )}
-
-          {reviews.map((rev) => (
-            <div
-              key={rev._id}
-              className="border-t pt-4 mt-4 text-sm flex gap-4 items-start text-green-700"
-            >
-              <img
-                src={rev?.photo || "https://i.ibb.co/ZYW3VTp/brown-brim.png"}
-                alt={rev.name || "Anonymous"}
-                className="w-12 h-12 rounded-full object-cover border"
-              />
-              <div>
-                <p className="font-semibold">
-                  {rev.name || "Anonymous"} ({rev.email || "No email"})
-                </p>
-                <Rating
-                  readonly
-                  initialRating={rev.rating || 0}
-                  emptySymbol={<span className="text-gray-300 text-sm">★</span>}
-                  fullSymbol={
-                    <span className="text-yellow-500 text-sm">★</span>
-                  }
-                />
-                <p className="mt-1 whitespace-pre-line">{rev.comment}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {new Date(rev.date).toLocaleString()}
-                </p>
-                <button
-                  onClick={() => handleDeleteReview(rev._id)}
-                  className="mt-2 text-red-500 hover:text-red-700"
-                  title="Delete review"
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <Link
+          to={`/payment/${product._id}`}
+          className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl shadow hover:from-green-700 hover:to-green-800 transition transform hover:scale-105"
+        >
+          🛒 Buy Product
+        </Link>
       </div>
     </div>
+  </motion.div>
+
+  {/* Comparison Section */}
+  <div className={`max-w-5xl mx-auto mt-10 p-6 rounded-xl shadow transition-colors duration-500 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+    <label className={`${theme === 'dark' ? 'text-white' : 'text-green-800'} font-semibold block mb-2`}>
+      📊 Compare with previous date:
+    </label>
+
+    <ReactDatePicker
+      selected={selectedDate}
+      onChange={handleCompareDate}
+      dateFormat="yyyy-MM-dd"
+      maxDate={yesterday}
+      className="border p-2 rounded-md border-green-300 w-full max-w-xs mb-4"
+      placeholderText="Select a past date"
+    />
+
+    {comparisonData.length === 2 && (
+      <div className="my-4">
+        <p className={`${theme === 'dark' ? 'text-white' : 'text-green-800'} font-semibold text-lg`}>
+          🧾 Price Difference: <span className={theme === 'dark' ? 'text-yellow-400' : 'text-black'}>{comparisonData[1].price - comparisonData[0].price}৳</span>
+        </p>
+
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={comparisonData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" stroke={theme === 'dark' ? 'white' : 'black'} />
+            <YAxis unit="৳" stroke={theme === 'dark' ? 'white' : 'black'} />
+            <Tooltip />
+            <Line type="monotone" dataKey="price" stroke="#00B894" strokeWidth={2} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    )}
+  </div>
+
+  {/* Reviews Section */}
+  <div className={`max-w-5xl mx-auto mt-10 p-6 rounded-xl shadow transition-colors duration-500 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+    <h3 className={`${theme === 'dark' ? 'text-white' : 'text-green-800'} text-xl font-semibold mb-4`}>💬 User Reviews</h3>
+
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <Rating
+        initialRating={rating}
+        emptySymbol={<span className="text-gray-300 text-3xl">★</span>}
+        fullSymbol={<span className="text-yellow-400 text-3xl">★</span>}
+        fractions={2}
+        onChange={(rate) => setRating(rate)}
+      />
+      <textarea
+        name="review"
+        rows="3"
+        placeholder="Write your honest review here..."
+        className="w-full border border-green-300 rounded-lg p-3 text-sm"
+        required
+      ></textarea>
+      <button
+        type="submit"
+        className="self-end bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-2 rounded-xl shadow transition transform hover:scale-105"
+      >
+        Submit Review
+      </button>
+    </form>
+
+    <div className="mt-6 space-y-4">
+      {reviews.length === 0 && (
+        <p className="text-orange-600 font-semibold bg-amber-50 p-3 rounded">No reviews yet.</p>
+      )}
+
+      {reviews.map((rev) => (
+        <div key={rev._id} className={`flex gap-4 items-start p-4 rounded-lg transition shadow ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-green-50 text-green-700'}`}>
+          <img
+            src={rev?.photo || 'https://i.ibb.co/ZYW3VTp/brown-brim.png'}
+            alt={rev.name || 'Anonymous'}
+            className="w-12 h-12 rounded-full object-cover border"
+          />
+          <div className="flex-1">
+            <p className="font-semibold">{rev.name || 'Anonymous'} ({rev.email || 'No email'})</p>
+            <Rating
+              readonly
+              initialRating={rev.rating || 0}
+              emptySymbol={<span className="text-gray-300 text-sm">★</span>}
+              fullSymbol={<span className="text-yellow-500 text-sm">★</span>}
+            />
+            <p className="mt-1 whitespace-pre-line">{rev.comment}</p>
+            <p className="text-xs text-gray-400 mt-1">{new Date(rev.date).toLocaleString()}</p>
+            <button
+              onClick={() => handleDeleteReview(rev._id)}
+              className="mt-2 text-red-500 hover:text-red-700"
+              title="Delete review"
+            >
+              <FaTrash />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+  </div>
+</div>
+
   );
 };
 
