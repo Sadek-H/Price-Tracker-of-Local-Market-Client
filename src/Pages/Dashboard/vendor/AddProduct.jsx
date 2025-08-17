@@ -36,17 +36,12 @@ const AddProduct = () => {
       prices: priceDate,
     };
 
-<<<<<<< HEAD
-    console.log(productData);
 
-    axios
-      .post("https://price-tracker-of-market-server.onrender.com/dashboard/add-product", productData,
-=======
     axios
       .post(
         "https://price-tracker-for-local-markets-ser.vercel.app/dashboard/add-product",
         productData,
->>>>>>> c1114fc (add theme)
+
         {
           headers: {
             Authorization: `Bearer ${token}`,

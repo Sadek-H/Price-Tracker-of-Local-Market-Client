@@ -22,25 +22,14 @@ const ViewPriceTrends = () => {
   const { theme } = useOutletContext();
 
   useEffect(() => {
-<<<<<<< HEAD
-    axios.get("https://price-tracker-of-market-server.onrender.com/watchlistPrice",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-      .then(res => {
-        const data = res.data;
-        console.log(data);
-=======
+
     axios
       .get("https://price-tracker-for-local-markets-ser.vercel.app/watchlistPrice", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
         const data = res.data;
->>>>>>> c1114fc (add theme)
+
         const productMap = new Map();
 
         data.forEach((item) => {

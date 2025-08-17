@@ -13,11 +13,7 @@ const AddAds = () => {
     const form = e.target;
     const formdata = new FormData(form);
     const data = Object.fromEntries(formdata.entries());
-<<<<<<< HEAD
-    console.log(data);
-=======
 
->>>>>>> c1114fc (add theme)
     const adData = {
       userEmail: user?.email,
       title: data.title,

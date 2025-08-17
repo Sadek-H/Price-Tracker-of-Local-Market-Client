@@ -7,27 +7,16 @@ import Swal from "sweetalert2";
 
 const MyProduct = () => {
   const [products, setProducts] = useState([]);
-  const { user, token } = useContext(AuthContext);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const [rejection, setRejection] = useState([]);
-  const { theme } = useOutletContext();
+  const [loading, setLoading] = useState(true);
 
+  const { user, token } = useContext(AuthContext);
+  const { theme } = useOutletContext();
+  const navigate = useNavigate();
+
+  // Fetch rejection reasons
   useEffect(() => {
-<<<<<<< HEAD
-    axios.get("https://price-tracker-of-market-server.onrender.com/dashboard/rejectProduct",
-      {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-    ).then((res) => {
-      if (res.data) {
-        setRejection(res.data);
-      }
-    });
-  });
-=======
+    if (!token) return;
     axios
       .get("https://price-tracker-for-local-markets-ser.vercel.app/dashboard/rejectProduct", {
         headers: { Authorization: `Bearer ${token}` },
@@ -35,15 +24,13 @@ const MyProduct = () => {
       .then((res) => res.data && setRejection(res.data));
   }, [token]);
 
->>>>>>> c1114fc (add theme)
+  // Fetch user's products
   useEffect(() => {
     if (!user?.email) return;
     axios
       .get(
-        `https://price-tracker-of-market-server.onrender.com/dashboard/my-products?vendorEmail=${user.email}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `https://price-tracker-for-local-markets-ser.vercel.app/dashboard/my-products?vendorEmail=${user.email}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((res) => {
         setProducts(res.data);
@@ -51,6 +38,7 @@ const MyProduct = () => {
       });
   }, [user?.email, token]);
 
+  // Delete product
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -63,16 +51,9 @@ const MyProduct = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-<<<<<<< HEAD
-          .delete(`https://price-tracker-of-market-server.onrender.com/dashboard/deleteProduct/${id}`,
-=======
-          .delete(
-            `https://price-tracker-for-local-markets-ser.vercel.app/dashboard/deleteProduct/${id}`,
->>>>>>> c1114fc (add theme)
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          )
+          .delete(`https://price-tracker-for-local-markets-ser.vercel.app/dashboard/deleteProduct/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
           .then((res) => {
             if (res.data.deletedCount > 0) {
               setProducts((prev) => prev.filter((p) => p._id !== id));
@@ -95,13 +76,6 @@ const MyProduct = () => {
   }
 
   return (
-<<<<<<< HEAD
-    <div className="p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center text-green-700">
-        📦 My Submitted Products
-      </h2>
-      <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-200">
-=======
     <div
       className={`p-6 min-h-screen transition-colors duration-300 ${
         theme === "dark" ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-800"
@@ -117,7 +91,6 @@ const MyProduct = () => {
           theme === "dark" ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"
         }`}
       >
->>>>>>> c1114fc (add theme)
         <table className="table w-full text-sm">
           <thead
             className={`text-sm font-semibold ${
@@ -162,23 +135,14 @@ const MyProduct = () => {
                   </span>
                   {p.status === "rejected" && (
                     <p className="text-xs text-red-500 mt-1 italic">
-                      Reason:{" "}
-                      {rejection.find((r) => r.productId === p._id)?.reason ||
-                        "No reason provided"}
+                      Reason: {rejection.find((r) => r.productId === p._id)?.reason || "No reason provided"}
                     </p>
                   )}
                 </td>
                 <td>
                   <button
-<<<<<<< HEAD
-                    onClick={() =>
-                      navigate(`/dashboard/update-product/${p._id}`)
-                    }
-                    className="btn btn-xs btn-info text-white"
-=======
                     onClick={() => navigate(`/dashboard/update-product/${p._id}`)}
                     className="btn btn-xs bg-blue-500 hover:bg-blue-600 text-white rounded-md"
->>>>>>> c1114fc (add theme)
                   >
                     Edit
                   </button>
@@ -199,15 +163,9 @@ const MyProduct = () => {
           <div className="text-center py-8 text-gray-400">No products found.</div>
         )}
       </div>
-<<<<<<< HEAD
-=======
 
       {/* CARDS (mobile) */}
       <div className="lg:hidden space-y-6">
-        {products.length === 0 && (
-          <div className="text-center py-8 text-gray-400">No products found.</div>
-        )}
-
         {products.map((p, idx) => (
           <div
             key={p._id}
@@ -242,9 +200,7 @@ const MyProduct = () => {
             </p>
             {p.status === "rejected" && (
               <p className="text-red-400 italic mb-3 text-sm">
-                Reason:{" "}
-                {rejection.find((r) => r.productId === p._id)?.reason ||
-                  "No reason provided"}
+                Reason: {rejection.find((r) => r.productId === p._id)?.reason || "No reason provided"}
               </p>
             )}
             <div className="flex gap-4 flex-wrap">
@@ -263,8 +219,10 @@ const MyProduct = () => {
             </div>
           </div>
         ))}
+        {products.length === 0 && (
+          <div className="text-center py-8 text-gray-400">No products found.</div>
+        )}
       </div>
->>>>>>> c1114fc (add theme)
     </div>
   );
 };

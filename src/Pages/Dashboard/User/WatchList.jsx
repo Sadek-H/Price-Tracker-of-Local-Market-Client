@@ -24,15 +24,10 @@ const WatchList = () => {
   const fetchWatchlist = () => {
     setLoading(true);
     axios
-<<<<<<< HEAD
-      .get("https://price-tracker-of-market-server.onrender.com/watchlist", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-=======
+
       .get("https://price-tracker-for-local-markets-ser.vercel.app/watchlist", {
         headers: { Authorization: `Bearer ${token}` },
->>>>>>> c1114fc (add theme)
+
       })
       .then((res) => {
         const filtered = res.data.filter((item) => item.userEmail === user.email);
@@ -56,15 +51,12 @@ const WatchList = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-<<<<<<< HEAD
-          .delete(`https://price-tracker-of-market-server.onrender.com/watchlist/${id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-=======
+
+         
+
           .delete(`https://price-tracker-for-local-markets-ser.vercel.app/watchlist/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
->>>>>>> c1114fc (add theme)
+ 
           })
           .then(() => {
             setWatchlist((prev) => prev.filter((item) => item._id !== id));

@@ -30,11 +30,7 @@ const BecomeVendor = () => {
       );
 
       if (res.data.insertedId) {
-<<<<<<< HEAD
-        console.log(res.data);
 
-=======
->>>>>>> c1114fc (add theme)
         Swal.fire("Success", "Vendor request submitted!", "success");
       }
     } catch (error) {
